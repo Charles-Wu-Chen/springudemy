@@ -21,5 +21,12 @@ From ModelAndView:<%=request.getAttribute("requestName") %>
 request (using EL): ${requestName}
 <br>
 <c:out value="${requestName}"></c:out>
+
+<c:forEach var="row" items="${offers}">
+    ID: ${row.id}<br/>
+    Name: ${row.name}<br/>
+    Email: ${row.email}<br/>
+    Text: ${row.text}<br/>
+</c:forEach>
 </body>
 </html>
