@@ -1,12 +1,17 @@
 @CHARSET "US-ASCII";
 
 .formtable {
-	width: 400px;
+	width: 600px;
 	padding: 10px;
 	border: 1px solid blue;
 }
 
 input[type=text] {
+	width: 250px;
+	
+}
+
+input[type=password] {
 	width: 250px;
 	
 }
@@ -31,11 +36,17 @@ textarea {
 	margin-left: 10px;
 }
 
+.valid {
+	font-size: small;
+	color: green;
+	margin-left: 10px;
+}
+
 table.offers {
 	padding: 20px;
 	border: 1px solid gray;
 }
 
 p.error {
-	color: red;
+	font-size: medium;
 }
