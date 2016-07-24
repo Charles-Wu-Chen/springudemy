@@ -7,13 +7,17 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import com.caveofprogramming.spring.web.dao.Offer;
-import com.caveofprogramming.spring.web.dao.OffersDAO;
+import com.caveofprogramming.spring.web.dao.OffersDao;
 
-@Service
+@Service("offersService")
 public class OffersService {
-
+	
+	private OffersDao offersDao;
+	
 	@Autowired
-	OffersDAO offersDao;
+	public void setOffersDao(OffersDao offersDao) {
+		this.offersDao = offersDao;
+	}
 
 	public List<Offer> getCurrent() {
 		return offersDao.getOffers();
@@ -23,5 +27,4 @@ public class OffersService {
 	public void create(Offer offer) {
 		offersDao.create(offer);
 	}
-
 }
