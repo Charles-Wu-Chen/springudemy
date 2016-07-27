@@ -26,33 +26,56 @@ import com.caveofprogramming.spring.web.dao.UsersDao;
 		"classpath:com/caveofprogramming/spring/web/test/config/datasource.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class UserDaoTests {
-	
+
 	@Autowired
 	private UsersDao usersDao;
-	
+
 	@Autowired
 	private DataSource dataSource;
+	
+	private User user1 = new User("johnwpurcell", "John Purcell", "hellothere",
+			"john@caveofprogramming.com", true, "ROLE_USER");
+	private User user2 = new User("richardhannay", "Richard Hannay", "the39steps",
+			"richard@caveofprogramming.com", true, "ROLE_ADMIN");
+	private User user3 = new User("suetheviolinist", "Sue Black", "iloveviolins",
+			"sue@caveofprogramming.com", true, "ROLE_USER");
+	private User user4 = new User("rogerblake", "Rog Blake", "liberator",
+			"rog@caveofprogramming.com", false, "user");
 
 	@Before
 	public void init() {
 		JdbcTemplate jdbc = new JdbcTemplate(dataSource);
-		
+
+		jdbc.execute("delete from offers");
 		jdbc.execute("delete from users");
 	}
 	
 	@Test
-	public void testCreateUser() {
-		User user = new User("johnwpurcell", "John Purcell", "hellothere", "john@caveofprogramming.com", true, "user");
+	public void testCreateRetrieve() {
+		usersDao.create(user1);
 		
-		assertTrue("User creation should return true", usersDao.create(user));
+		List<User> users1 = usersDao.getAllUsers();
 		
-		List<User> users = usersDao.getAllUsers();
+		assertEquals("One user should have been created and retrieved", 1, users1.size());
 		
-		assertEquals("Number of users should be 1.", 1, users.size());
+		assertEquals("Inserted user should match retrieved", user1, users1.get(0));
 		
-		assertTrue("User should exist.", usersDao.exists(user.getUsername()));
+		usersDao.create(user2);
+		usersDao.create(user3);
+		usersDao.create(user4);
 		
-		assertEquals("Created user should be identical to retrieved user", user, users.get(0));
+		List<User> users2 = usersDao.getAllUsers();
+		
+		assertEquals("Should be four retrieved users.", 4, users2.size());
 	}
 	
+	@Test
+	public void testExists() {
+		usersDao.create(user1);
+		usersDao.create(user2);
+		usersDao.create(user3);
+		
+		assertTrue("User should exist.", usersDao.exists(user2.getUsername()));
+		assertFalse("User should not exist.", usersDao.exists("xkjhsfjlsjf"));
+	}
 }

@@ -9,11 +9,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ErrorHandler {
 	@ExceptionHandler(DataAccessException.class)
 	public String handleDatabaseException(DataAccessException ex) {
+		ex.printStackTrace();
 		return "error";
 	}
 	
 	@ExceptionHandler(AccessDeniedException.class)
-	public String handleAccessDeniedException(AccessDeniedException ex) {
+	public String handleAccessException(AccessDeniedException ex) {
 		return "denied";
 	}
 }
