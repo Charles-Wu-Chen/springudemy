@@ -14,6 +14,8 @@
 	<jee:jndi-lookup jndi-name="jdbc/spring" id="dataSource"
 		expected-type="javax.sql.DataSource">
 	</jee:jndi-lookup>
+	
+	<!-- set -Dspring.profiles.active=production in run configure in tomcat server start arguments -->
 	<beans profile="production">
 
 		<bean id="sessionFactory"

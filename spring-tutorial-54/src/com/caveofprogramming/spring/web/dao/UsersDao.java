@@ -37,15 +37,19 @@ public class UsersDao {
 	}
 	
 	public boolean exists(String username) {
-		Criteria crit = session().createCriteria(User.class);
-		crit.add(Restrictions.idEq(username));
-		User user = (User)crit.uniqueResult();
+		User user = getUser(username);
 		return user != null;
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<User> getAllUsers() {
 		return session().createQuery("from User").list();
+	}
+
+	public User getUser(String username) {
+		Criteria crit = session().createCriteria(User.class);
+		crit.add(Restrictions.idEq(username));
+		return (User)crit.uniqueResult();
 	}
 
 }
