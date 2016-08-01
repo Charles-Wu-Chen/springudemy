@@ -43,7 +43,7 @@ public class UsersService {
 	}
 
 
-	public List<Message> getMessage(String username) {
+	public List<Message> getMessages(String username) {
 		return messagesDao.getMessages(username);
 	}
 

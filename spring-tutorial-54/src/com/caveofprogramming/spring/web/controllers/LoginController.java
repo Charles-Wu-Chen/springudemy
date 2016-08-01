@@ -6,18 +6,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.caveofprogramming.spring.web.dao.FormValidationGroup;
 import com.caveofprogramming.spring.web.dao.Message;
 import com.caveofprogramming.spring.web.dao.User;
 import com.caveofprogramming.spring.web.service.UsersService;
@@ -26,6 +32,9 @@ import com.caveofprogramming.spring.web.service.UsersService;
 public class LoginController {
 	
 	private UsersService usersService;
+	
+	@Autowired
+	private MailSender mailSender;
 	
 	@Autowired
 	public void setUsersService(UsersService usersService) {
@@ -40,6 +49,11 @@ public class LoginController {
 	@RequestMapping("/denied")
 	public String showDenied() {
 		return "denied";
+	}
+	
+	@RequestMapping("/messages")
+	public String showMessages() {
+		return "messages";
 	}
 	
 	@RequestMapping("/admin")
@@ -66,7 +80,7 @@ public class LoginController {
 	
 
 	@RequestMapping(value="/createaccount", method=RequestMethod.POST)
-	public String createAccount(@Valid User user, BindingResult result) {
+	public String createAccount(@Validated(FormValidationGroup.class) User user, BindingResult result) {
 		
 		if(result.hasErrors()) {
 			return "newaccount";
@@ -93,19 +107,53 @@ public class LoginController {
 	
 	@RequestMapping(value="/getmessages", method=RequestMethod.GET, produces="application/json")
 	@ResponseBody
-	public Map<String, Object> getMessages(Principal principal){
+	public Map<String, Object> getMessages(Principal principal) {
+		
 		List<Message> messages = null;
-		if (principal == null){
+		
+		if(principal == null) {
 			messages = new ArrayList<Message>();
 		}
 		else {
 			String username = principal.getName();
-			messages = usersService.getMessage(username);
+			messages = usersService.getMessages(username);
 		}
-		Map<String, Object> data = new HashMap<String, Object>();
 		
+		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("messages", messages);
 		data.put("number", messages.size());
+		
 		return data;
+	}
+	
+	@RequestMapping(value="/sendmessage", method=RequestMethod.POST, produces="application/json")
+	@ResponseBody
+	public Map<String, Object> sendMessage(Principal principal, @RequestBody Map<String, Object> data) {
+		
+		
+		String text = (String)data.get("text");
+		String name = (String)data.get("name");
+		String email = (String)data.get("email");
+		Integer target = (Integer)data.get("target");
+		
+
+		SimpleMailMessage mail = new SimpleMailMessage();
+		mail.setFrom("learnhungarianfast@gmail.com");
+		mail.setTo(email);
+		mail.setSubject("Re: " + name + ", your message");
+		mail.setText(text);
+		
+		try {
+			mailSender.send(mail);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Can't send message");
+		}
+
+		Map<String, Object> rval = new HashMap<String, Object>();
+		rval.put("success", true);
+		rval.put("target", target);
+		
+		return rval;
 	}
 }
