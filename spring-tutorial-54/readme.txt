@@ -18,3 +18,6 @@ ContextLoaderListener >>  xml file you set with the context-param >> Application
 
 offers-servlet.xml
 DispatcherServlet >> ApplicationContext >> Web Tier beans like your Controllers, ViewResolvers, MappingHandlers
+
+https://www.udemy.com/javaspring/learn/v4/overview
+with facebook login
